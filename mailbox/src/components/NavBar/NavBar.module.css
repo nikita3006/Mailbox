@@ -7,7 +7,7 @@
     text-decoration: none;
     color: inherit;
     font-size:large;
-    margin-left: 25px;
+    margin-bottom: 20px;
 }
 
 .activeLink {
@@ -16,7 +16,15 @@
     border-radius: 4px;
 }
 
-.userName {
+.navbar {
+    background-color: black;
+    /* background-color: transparent; */
     color: white;
-    margin-left: 50px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px;
+    /* position: fixed; */
 }

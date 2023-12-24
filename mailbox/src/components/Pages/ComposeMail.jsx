@@ -1,10 +1,12 @@
 import React, { useState, useRef } from "react";
 import { Button, Card, Form, FloatingLabel, FormControl } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "react-quill/dist/quill.snow.css"; // Import React Quill styles
 import ReactQuill from "react-quill"; // Import React Quill
 
 function ComposeMail() {
+  const dispatch = useDispatch();
+
   const userEmail = useSelector((state) => state.auth.userEmail);
   const userName = userEmail && userEmail.split("@")[0];
   
@@ -29,7 +31,21 @@ function ComposeMail() {
       const subject = subjectRef.current.value;
       const editorHtmlwithoutTags = editorHtml.replace(/<[^>]*>/g, "");
 
+      const dateObj = new Date();
+      const year = dateObj.getFullYear();
+      const month = dateObj.getMonth()+1;
+      const day = dateObj.getDate();
+      const hours = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+
+      const date = {day,month,year};
+      const time = {hours, minutes};
+
+      
+
       const sentMessage = {
+        date : date,
+        time: time,
         toMail : receiverEmail,
         to: receiverName,
         subject: subjectRef.current.value,
@@ -45,6 +61,8 @@ function ComposeMail() {
   
         toEmailRef.current.value = "";
         subjectRef.current.value = "";
+      const sentData = await sentResponse.json();
+      console.log(sentData,'sentData')
       setEditorHtml("");
   
       // Sending data to the inbox of the user
