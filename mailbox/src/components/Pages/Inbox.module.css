@@ -1,8 +1,15 @@
-.mail {
+.openedMail {
     color: black;
     padding: 5px;
     border: 1px solid black;
     background: rgb(209, 209, 248);
+}
+
+.notOpenedMail {
+    color: black;
+    padding: 5px;
+    border: 1px solid black;
+    background: rgb(195, 235, 211);
 }
 /* rgb(226, 252, 236); */
 /* rgb(151, 223, 180) */
@@ -25,4 +32,11 @@
 
 .inbox {
     margin-bottom: 80px;
+}
+
+.content {
+    width: 700px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -10,13 +10,34 @@ function NavigationBar() {
     const userEmail = useSelector(state => state.auth.userEmail);
     const userName = userEmail && userEmail.split("@")[0];
 
-
+    // if(!userName){
+    //   return null;
+    // }
     const logoutHandler =()=>{
         dispatch(authActions.logout());
     }
+
   return (
     <div>
     <Navbar bg="dark" data-bs-theme="dark">
+      {!userEmail && (
+        <Navbar.Brand>
+          <NavLink 
+            to='/login'
+            activeClassName={classes.activeLink}
+            className={classes.navlink}
+          >
+            Login
+          </NavLink>
+          <NavLink 
+            to='/signup'
+            activeClassName={classes.activeLink}
+            className={classes.navlink}
+          >
+            Sign Up 
+          </NavLink>
+        </Navbar.Brand>
+      )}
       {userEmail && (
         <>
           <Col className="col-4">

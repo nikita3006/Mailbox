@@ -16,7 +16,9 @@ function ComposeMail() {
   const subjectRef = useRef();
   
   const onEditorChange = (html) => {
+    console.log(html,'inonchange');
     setEditorHtml(html);
+    
   };
   
   const SubmitHandler = async (event) => {
@@ -24,13 +26,16 @@ function ComposeMail() {
       event.preventDefault();
       const receiverEmail = toEmailRef.current.value;
       const receiverName = receiverEmail.split("@")[0];
-      console.log(receiverName,'in compose rec')
+      const subject = subjectRef.current.value;
+      const editorHtmlwithoutTags = editorHtml.replace(/<[^>]*>/g, "");
+
       const sentMessage = {
-        to: toEmailRef.current.value,
+        toEmail : receiverEmail,
+        to: receiverName,
         subject: subjectRef.current.value,
-        content: editorHtml,
+        content: editorHtmlwithoutTags,
       };
-      console.log(sentMessage,'in compose mail')
+      // console.log(sentMessage,'in compose mail')
   
       // Sending data to the outbox
       const sentResponse = await fetch(`${firebaseUrl}/${userName}/sentbox.json`, {
@@ -38,18 +43,17 @@ function ComposeMail() {
         body: JSON.stringify(sentMessage),
       });
   
-      console.log(sentResponse);
-  
-      toEmailRef.current.value = "";
-      subjectRef.current.value = "";
+        toEmailRef.current.value = "";
+        subjectRef.current.value = "";
       setEditorHtml("");
   
       // Sending data to the inbox of the user
       const receiverMessage = {
-        from: userEmail,
-        subject: subjectRef.current.value,
-        content: editorHtml,
-        read: false,
+        from: userName,
+        fromMail: userEmail,
+        subject: subject,
+        content: editorHtmlwithoutTags,
+        isRead: false,
       };
   
       const receiverResponse = await fetch(`${firebaseUrl}/${receiverName}/inbox.json`, {
@@ -58,7 +62,6 @@ function ComposeMail() {
       });
   
       const receiverData = await receiverResponse.json();
-      console.log(receiverData, "data");
       receiverData && alert("Mail sent succesfully")
     } catch (error) {
       console.error(error);
@@ -88,9 +91,10 @@ function ComposeMail() {
         </FloatingLabel>
         <Card.Body>
           <strong>Compose email</strong>
-          <ReactQuill value={editorHtml} onChange={onEditorChange} />
+          <ReactQuill value={editorHtml} onChange={onEditorChange} theme="snow" placeholder="Enter Your Email" style={{height:'80px'}}/>
+
         </Card.Body>
-        <Button type="submit" style={{marginTop: '8px'}}>
+        <Button type="submit" style={{marginTop: '40px'}}>
           Send
         </Button>
       </Card>

@@ -6,6 +6,8 @@ import NavigationBar from "./components/NavBar/NavigationBar";
 import ComposeMail from "./components/Pages/ComposeMail";
 import SentBox from "./components/Pages/SentBox";
 import Inbox from "./components/Pages/Inbox";
+import TotalMail from "./components/Pages/TotalMail";
+
 
 
 function App() {  
@@ -27,15 +29,19 @@ function App() {
           {isLoggedIn && <ComposeMail />}
           {!isLoggedIn && <Redirect to='login' />}
         </Route>
-        <Route path="/inbox">
+        <Route exact path="/inbox">
           {isLoggedIn && <Inbox/>}
           {!isLoggedIn && <Redirect to="login"/>}
         </Route>
-        <Route path="/sentbox">
+        <Route exact path="/inbox/:id">
+          {isLoggedIn && <TotalMail/>}
+          {!isLoggedIn && <Redirect to="login"/>}
+        </Route>
+        <Route exact path="/sentbox">
           {isLoggedIn && <SentBox/>}
           {!isLoggedIn && <Redirect to="login"/>}
         </Route>
-        <Route path="*">
+        <Route exact path="*">
           {isLoggedIn && <Redirect to="/inbox"/>}
           {!isLoggedIn && <Redirect to="login"/>}
         </Route>

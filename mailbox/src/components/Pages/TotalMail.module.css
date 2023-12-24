@@ -1,0 +1,10 @@
+.box{
+    margin: 50px 20px;
+    background-color: rgb(202, 230, 255);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.navlink {
+    text-decoration: none;
+}

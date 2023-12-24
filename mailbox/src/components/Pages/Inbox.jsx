@@ -12,6 +12,13 @@ function Inbox() {
 
   const [mails,setMails] = useState([]);
 
+  let countUnReadMails = 0;
+  for(let mail of mails){
+    if(!mail.isRead){
+      countUnReadMails ++;
+    }
+  }
+
   useEffect(()=>{
     const getDetails = async()=>{
       const response = await fetch(`${firebaseUrl}/${userName}/inbox.json`)
@@ -25,26 +32,49 @@ function Inbox() {
     }
     getDetails();
   },[userName]);
-  console.log(mails,'in inbox mails');
+  
+  const openMail = async (mail)=>{
+    const updatedMail = {...mail,isRead: true};
+    const mailIndex= mails.findIndex(i => i.id === mail.id);
+    const updatedMails = [...mails];
+    updatedMails[mailIndex]= updatedMail;
+    setMails(updatedMails);
+
+    const response = await fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
+      method:"PUT",
+      body : JSON.stringify(updatedMail),
+    })
+
+  }
+
+
   return (
     <div className={classes.inbox}>
-      <h3 className={classes.inboxHeading}>Inbox</h3>
+      <h3 className={classes.inboxHeading}>
+        Inbox({countUnReadMails  ? `${countUnReadMails}-unread mails` : 'No UnRead Mails' })
+      </h3>
       {mails.map((mail) => (
         <NavLink className={classes.navlink} key={mail.id} to={`/inbox/${mail.id}`}>
-          <Container fluid>
-            <Row key={mail.id} className={classes.mail} >
-              <Col className="col-4"></Col>
-              <Col className="fw-bold col-2" >{mail.from}</Col>
-              <Col className="col-5"><strong>{mail.subject} - </strong> {mail.content}</Col>
+            <Row 
+              onClick={openMail.bind(null,mail)}
+              key={mail.id}
+              className={ mail.isRead ? classes.openMail : classes.notOpenedMail }
+            >
+              <Col className="col-3"></Col>
+              <Col className="fw-bold col-2">{mail.from}</Col>
+              <Col className="col-7">
+                <div className={classes.content} >
+                  <strong>{mail.subject} - </strong> {mail.content}
+                </div>
+              </Col>
             </Row>
-          </Container>
         </NavLink>
       ))}
-      <Button className={classes.composeBtn} variant="success">
-          <NavLink className={classes.navlink} to="compose-mail">
+      <NavLink className={classes.navlink} to="compose-mail">
+          <Button className={classes.composeBtn} variant="success" >
             Compose
-          </NavLink>
-      </Button>
+          </Button>
+      </NavLink>
     </div>
   )
 }
