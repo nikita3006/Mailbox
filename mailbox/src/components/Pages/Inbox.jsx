@@ -48,7 +48,7 @@ function Inbox() {
   }
 
   const deleteMail =async (mail)=>{
-    const updatedMails = mail.filter((i)=> i.id !== mail.id);
+    const updatedMails = mails.filter((i)=> i.id !== mail.id);
     setMails(updatedMails);
 
     const response = await fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
