@@ -1,20 +1,17 @@
 .box {
-    margin: 150px auto;
-    width: 35rem;
-    padding: 25px;
-    background-color: rgb(32, 2, 88);
-    border-radius: 20px;
+  margin: 100px auto;
+  width: 600px;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px blue;
   }
   .box h1 {
-    color: white;
+    color: black;
     text-align: center;
   }
 
-  .label {
-    color: white;
-  }
-
-  .navlink {
-    color: white; 
-    padding-top: 1rem; 
+  .button {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
   }

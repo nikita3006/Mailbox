@@ -2,45 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
 import classes from "./Inbox.module.css";
 import { Row, Col, Button ,Container} from "react-bootstrap";
+import { useDispatch, useSelector } from 'react-redux';
+import { mailActions } from '../store/MailSlice';
+import useHttp from '../Hooks/useHttp';
 
 function SentBox() {
 
   const userEmail = localStorage.getItem('email');
   const userName = userEmail.split("@")[0]
+  const dispatch = useDispatch();
+  const mails = useSelector(state => state.mails.sentBoxMails);
+  const [isLoading, setIsLoading] = useState(null);
 
-  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
-
-  const [mails,setMails]= useState([]);
-
-  useEffect(()=>{
-    const getDetails = async ()=>{
-      const response = await fetch(`${firebaseUrl}/${userName}/sentbox.json`);
-      const data = await response.json();
-      const loadedMails = []
-
-      for(let key in data){
-        let mail = {id : key , ...data[key]}
-        loadedMails.push(mail);
-      }
-      setMails(loadedMails);
-    }
-    getDetails();
-    const intervalId = setInterval(getDetails, 2000);
-
-    // Cleanup the interval when the component unmounts
-    return () => {
-      clearInterval(intervalId);
-    };
-  },[userName])
+  const sendRequest = useHttp();
 
   const deleteMail = async(mail)=>{
-    const updatedMails =mails.filter((i)=> i.id !== mail.id)
-    setMails(updatedMails);
-
-    const response = await fetch(`${firebaseUrl}/${userName}/sentbox/${mail.id}.json`,{
-      method: "DELETE"
-    })
-
+    try {
+      setIsLoading(mail.id);
+      await sendRequest({
+        endPoint : `${userName}/sentbox/${mail.id}`,
+        method : 'DELETE'
+      })
+      setIsLoading(null);
+      dispatch(mailActions.removeSentboxMail(mail));
+    } catch (error) {
+      alert(error);
+    }
+   
   }
   return (
     <div className={classes.inbox}>
@@ -72,7 +60,15 @@ function SentBox() {
                 style={{ padding: "0px 5px" }}
                 variant="danger"
               >
-                Delete
+                {(isLoading === mail.id) ?   
+                  <span>
+                    <Spinner as="span" animation="border" size="sm" role="status" 
+                      aria-hidden="true"
+                    />
+                  </span>
+                  : 
+                  'Delete'
+                }
               </Button>
             </Col>
           </Row>

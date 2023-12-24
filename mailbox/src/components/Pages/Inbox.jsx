@@ -1,73 +1,55 @@
 import React, { useEffect, useState } from 'react'
-import { Row, Col, Container, Button } from "react-bootstrap";
+import { Row, Col, Container, Button ,Spinner} from "react-bootstrap";
 import { NavLink } from 'react-router-dom/cjs/react-router-dom.min';
 import classes from "./Inbox.module.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { mailActions } from '../store/MailSlice';
+import useHttp from '../Hooks/useHttp';
 
 
 function Inbox() {
   const dispatch = useDispatch();
+  const sendRequest = useHttp();
+  const [isLoading, setIsLoading] = useState(null);
   const mails = useSelector(state => state.mails.inboxMails);
   
 
-  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
   const userEmail = localStorage.getItem('email');
   const userName = userEmail.split("@")[0];
 
-  // const [mails,setMails] = useState([]);
-
-  // let countUnReadMails = 0;
-  // for(let mail of mails){
-  //   if(!mail.isRead){
-  //     countUnReadMails ++;
-  //   }
-  // }
-
-  // useEffect(()=>{
-  //   const getDetails = async()=>{
-  //     const response = await fetch(`${firebaseUrl}/${userName}/inbox.json`)
-  //     const data = await response.json();
-  //     const loadedMails = [];
-  //     for (let key in data){
-  //       let mail = {id:key,...data[key]};
-  //       loadedMails.push(mail);
-  //     }
-  //     setMails(loadedMails);
-  //   }
-  //   getDetails();
-
-  //   const intervalId = setInterval(getDetails, 2000);
-
-  //   // Cleanup the interval when the component unmounts
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // },[userName]);
   
-  const openMail = async (mail)=>{
-   dispatch(mailActions.updatedInboxMail(mail));
-
-    const response = await fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
-      method:"PUT",
-      body : JSON.stringify({...mail,isRead : true}),
-    })
-
+  const openMail = async(mail) => {
+    try {
+      dispatch(mailActions.updatedInboxMail(mail));
+      await sendRequest({
+        endPoint: `${userName}/inbox/${mail.id}`,
+        method: "PUT",
+        body: {...mail, isRead: true}
+      });
+    } catch (error) {
+      console.log(error,"openMail inbox");
+    }  
   }
 
-  const deleteMail =async (mail)=>{
-    dispatch(mailActions.removeInboxMail(mail));
-
-    const response = await fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
-      method: "DELETE",
-    })
-
-  }
+    const deleteMail = async (mail) => {
+      try {
+        setIsLoading(mail.id);
+        await sendRequest({
+          endPoint: `${userName}/inbox/${mail.id}`,
+          method: "DELETE",
+        })
+        setIsLoading(null);
+        dispatch(mailActions.removeInboxMail(mail));
+      } catch (error) {
+        console.log(error,"inbox delete");
+      }
+    };
 
 
   return (
     <div className={classes.inbox}>
        <h3 className={classes.inboxHeading}>Inbox</h3>
+       {!mails.length && <h5 className={classes.inboxHeading}>No Mails</h5>}
       {mails.map((mail) => (
         <Container fluid key={mail.id}>
           <Row key={mail.id} className={
@@ -97,7 +79,15 @@ function Inbox() {
                 style={{ padding: "0px 5px" }}
                 variant="danger"
               >
-                Delete
+                 {(isLoading === mail.id) ?   
+                  <span>
+                    <Spinner as="span" animation="border" size="sm" role="status" 
+                      aria-hidden="true"
+                    />
+                  </span>
+                  : 
+                  'Delete'
+                }
               </Button>
             </Col>
           </Row>

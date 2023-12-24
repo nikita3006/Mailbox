@@ -9,39 +9,45 @@ import SentBox from "./components/Pages/SentBox";
 import Inbox from "./components/Pages/Inbox";
 import InboxView from "./components/Pages/InboxView";
 import SentboxView from "./components/Pages/SentboxView";
-import { useEffect } from "react";
+import { useEffect,useCallback } from "react";
 import { mailActions } from "./components/store/MailSlice";
+import useHttp from "./components/Hooks/useHttp";
 
 
 
 
 function App() {  
+  const sendRequest = useHttp();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 
-  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
+  // const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
 
   const  userEmail = localStorage.getItem('email');
   const userName = userEmail && userEmail.split("@")[0];
 
+  const fetchData =useCallback(async(type) => {
+    const data = await sendRequest({endPoint: `${userName}/${type}`});
+    // console.log(data, "refresh pp")
+    const loadedMails = [];
+    for (let key in data) {
+      let mail = { id: key, ...data[key] };
+      loadedMails.push(mail);
+    }
+    if (type === "inbox") {
+      dispatch(mailActions.replaceInboxMail(loadedMails))
+    }
+    else {
+      dispatch(mailActions.replaceSentboxMail(loadedMails))
+    }
+  },[dispatch, sendRequest,userName]);
+
   
   useEffect(()=> {
-    const fetchData = async(type) => {
-      const response = await fetch(`${firebaseUrl}/${userName}/${type}.json`);
-      const data = await response.json();
-      // console.log(data,"refresh pp")
-      const loadedMails = [];
-      for (let key in data) {
-        let mail = { id: key, ...data[key] };
-        loadedMails.push(mail);
-      }
-      if (type === "inbox") {
-        dispatch(mailActions.replaceInboxMail(loadedMails))
-      }
-      else {
-        dispatch(mailActions.replaceSentboxMail(loadedMails))
-      }
-    };
+    if (!isLoggedIn) {
+      return
+    }
+    
     fetchData("inbox");
     fetchData("sentbox");
     const intervalId = setInterval(() => {
@@ -52,12 +58,12 @@ function App() {
       clearInterval(intervalId);
     };
 
-  },[dispatch, userName])
+  },[isLoggedIn, fetchData, userName])
 
   return (
     <div className={classes.box}>
       <NavigationBar />
-      <div style={{width:"1500px"}}>
+      <div style={{width:"1400px"}}>
         <Switch>
           <Route exact path="/login">
             {isLoggedIn && <Redirect to="inbox" />}

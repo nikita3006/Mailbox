@@ -1,17 +1,21 @@
 import React, { useState, useRef } from "react";
-import { Button, Card, Form, FloatingLabel, FormControl } from "react-bootstrap";
+import { Button, Card, Form, FloatingLabel, FormControl ,Spinner} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import "react-quill/dist/quill.snow.css"; // Import React Quill styles
 import ReactQuill from "react-quill"; // Import React Quill
 import { mailActions } from "../store/MailSlice";
+import useHttp from "../Hooks/useHttp";
+
 
 function ComposeMail() {
   const dispatch = useDispatch();
 
+  const sendRequest = useHttp();
+
   const userEmail = useSelector((state) => state.auth.userEmail);
   const userName = userEmail && userEmail.split("@")[0];
   
-  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
+  
   
   const [editorHtml, setEditorHtml] = useState("");
   
@@ -23,10 +27,12 @@ function ComposeMail() {
     setEditorHtml(html);
     
   };
+  const [isLoading, setIsLoading] = useState(false);
   
   const SubmitHandler = async (event) => {
     try {
       event.preventDefault();
+      setIsLoading(true);
       const receiverEmail = toEmailRef.current.value;
       const receiverName = receiverEmail.split("@")[0];
       const subject = subjectRef.current.value;
@@ -55,15 +61,17 @@ function ComposeMail() {
       // console.log(sentMessage,'in compose mail')
   
       // Sending data to the outbox
-      const sentResponse = await fetch(`${firebaseUrl}/${userName}/sentbox.json`, {
-        method: "POST",
-        body: JSON.stringify(sentMessage),
+      const data = await sendRequest({
+        endPoint : `${userName}/sentbox`,
+        method : "POST",
+        body : sentMessage,
       });
-  
+     
         toEmailRef.current.value = "";
         subjectRef.current.value = "";
-      const data = await sentResponse.json();
+    
       const sentData = { id : data.name, ...sentMessage};
+      data && alert("Mail sent succesfully");
       dispatch(mailActions.addSentboxMail(sentData));
       setEditorHtml("");
   
@@ -77,16 +85,16 @@ function ComposeMail() {
         content: editorHtmlwithoutTags,
         isRead: false,
       };
-  
-      const receiverResponse = await fetch(`${firebaseUrl}/${receiverName}/inbox.json`, {
-        method: "POST",
-        body: JSON.stringify(receiverMessage),
+
+      const dataR = await sendRequest({
+        endPoint : `${receiverName}/inbox`,
+        method : "POST",
+        body : receiverMessage,
       });
-  
-      const receiverData = await receiverResponse.json();
-      receiverData && alert("Mail sent succesfully");
-      const  receiveData = {...receiverData, id: receiverData.name};
-      dispatch(mailActions.addInboxMail((receiveData)));
+      setIsLoading(false);
+   
+      // const  receiveData = {...receiverData, id: receiverData.name};
+      // dispatch(mailActions.addInboxMail((receiveData)));
     } catch (error) {
       console.error(error);
     }
@@ -119,7 +127,20 @@ function ComposeMail() {
 
         </Card.Body>
         <Button type="submit" style={{marginTop: '40px'}}>
-          Send
+          {isLoading ?   
+            <span>
+              Sending...
+              <Spinner 
+                as="span" 
+                animation="border" 
+                size="sm" 
+                role="status" 
+                aria-hidden="true"
+              />
+            </span>
+            : 
+            'Send'
+          }
         </Button>
       </Card>
     </Form>
