@@ -9,7 +9,6 @@ function NavigationBar() {
     const dispatch = useDispatch();
     const userEmail = useSelector(state => state.auth.userEmail);
     const userName = userEmail && userEmail.split("@")[0];
-    console.log(userEmail,'in navbar')
 
 
     const logoutHandler =()=>{
@@ -23,7 +22,7 @@ function NavigationBar() {
           <Col className="col-4">
             <h4 className={classes.userName}>User: {userName}</h4>
           </Col>
-          <Col className="col-6">
+          <Col className="col-7">
             <Navbar.Brand className="m-4">
               <NavLink
                 to="/compose-mail"
@@ -52,7 +51,7 @@ function NavigationBar() {
               </NavLink>
             </Navbar.Brand>
           </Col>
-          <Col className="col-2">
+          <Col className="col-1">
             <Button onClick={logoutHandler} variant="danger">
               Logout
             </Button>

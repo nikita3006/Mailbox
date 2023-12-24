@@ -52,7 +52,7 @@ function SignupPage() {
             }
             const data = await response.json();
             data && alert("Account Created");
-            data && history('/login');
+            data && history.replace('/login');
             console.log(data,'in signup')
         } catch (error) {
             alert(error);

@@ -7,59 +7,64 @@ import ReactQuill from "react-quill"; // Import React Quill
 function ComposeMail() {
   const userEmail = useSelector((state) => state.auth.userEmail);
   const userName = userEmail && userEmail.split("@")[0];
-
-  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/";
-
+  
+  const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
+  
   const [editorHtml, setEditorHtml] = useState("");
-
+  
   const toEmailRef = useRef();
   const subjectRef = useRef();
-
+  
   const onEditorChange = (html) => {
     setEditorHtml(html);
   };
-
-  const SubmitHandler = (event) => {
-    event.preventDefault();
-
-    const receiverEmail = toEmailRef.current.value;
-    const receiverName = receiverEmail.split("")[0];
-    const sentMessage = {
-      to: toEmailRef.current.value,
-      subject: subjectRef.current.value,
-      content: editorHtml,
-    };
-    // sending data to the outbox
-    fetch(`${firebaseUrl}/${userName}/sentbox.json`, {
-      method: "POST",
-      body: JSON.stringify(sentMessage),
-    })
-      .then((response) => {
-        console.log(response);
-        toEmailRef.current.value = "";
-        subjectRef.current.value = "";
-        setEditorHtml("");
-      })
-      .catch((error) => {
-        console.log(error);
+  
+  const SubmitHandler = async (event) => {
+    try {
+      event.preventDefault();
+      const receiverEmail = toEmailRef.current.value;
+      const receiverName = receiverEmail.split("@")[0];
+      console.log(receiverName,'in compose rec')
+      const sentMessage = {
+        to: toEmailRef.current.value,
+        subject: subjectRef.current.value,
+        content: editorHtml,
+      };
+      console.log(sentMessage,'in compose mail')
+  
+      // Sending data to the outbox
+      const sentResponse = await fetch(`${firebaseUrl}/${userName}/sentbox.json`, {
+        method: "POST",
+        body: JSON.stringify(sentMessage),
       });
-
-    // Sending data to the inbox of the user
-    const receiverMessage = {
-      from: userEmail,
-      subject: subjectRef.current.value,
-      content: editorHtml,
-      read: false,
-    };
-    fetch(`${firebaseUrl}/${receiverName}/inbox.json`, {
-      method: "POST",
-      body: JSON.stringify(receiverMessage),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data, "data");
+  
+      console.log(sentResponse);
+  
+      toEmailRef.current.value = "";
+      subjectRef.current.value = "";
+      setEditorHtml("");
+  
+      // Sending data to the inbox of the user
+      const receiverMessage = {
+        from: userEmail,
+        subject: subjectRef.current.value,
+        content: editorHtml,
+        read: false,
+      };
+  
+      const receiverResponse = await fetch(`${firebaseUrl}/${receiverName}/inbox.json`, {
+        method: "POST",
+        body: JSON.stringify(receiverMessage),
       });
+  
+      const receiverData = await receiverResponse.json();
+      console.log(receiverData, "data");
+      receiverData && alert("Mail sent succesfully")
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
 
   return (
     <Form onSubmit={SubmitHandler}>
@@ -70,27 +75,22 @@ function ComposeMail() {
           marginLeft: "5rem",
           marginTop: "2rem",
         }}
+       className="fw-bold"
       >
         <Card.Title style={{ fontFamily: "Arial", fontWeight: "bolder" }}>
           Compose Email
         </Card.Title>
         <FloatingLabel label="To:">
-          <FormControl type="email" placeholder="To" ref={toEmailRef} />
+          <FormControl type="email" placeholder="To" ref={toEmailRef}style={{marginBottom:"5px"}} />
         </FloatingLabel>
         <FloatingLabel label="Subject">
-          <FormControl type="text" placeholder="Subject" ref={subjectRef} />
+          <FormControl type="text" placeholder="Subject" ref={subjectRef} style={{marginBottom:"5px"}}/>
         </FloatingLabel>
-        <Card.Body
-          style={{
-            backgroundColor: "black",
-            color: "white",
-            textAlign: "left",
-          }}
-        >
-          Compose email
+        <Card.Body>
+          <strong>Compose email</strong>
           <ReactQuill value={editorHtml} onChange={onEditorChange} />
         </Card.Body>
-        <Button variant="success" type="submit">
+        <Button type="submit" style={{marginTop: '8px'}}>
           Send
         </Button>
       </Card>

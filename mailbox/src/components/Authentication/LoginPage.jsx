@@ -51,7 +51,6 @@ function LoginPage() {
       dispatch(authActions.login({token: data.idToken, email: data.email}))
       data && alert("Login Successfull !!");
       data && history.replace('/inbox');
-      console.log(data, "in login");
     } catch (error) {
       alert(error);
     }

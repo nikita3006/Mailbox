@@ -1,0 +1,28 @@
+.mail {
+    color: black;
+    padding: 5px;
+    border: 1px solid black;
+    background: rgb(209, 209, 248);
+}
+/* rgb(226, 252, 236); */
+/* rgb(151, 223, 180) */
+/* rgb(218, 218, 238) */
+.navlink {
+    text-decoration: none;
+    color: inherit;
+}
+
+.inboxHeading {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.composeBtn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+}
+
+.inbox {
+    margin-bottom: 80px;
+}
