@@ -3,13 +3,16 @@ import { Button, Form, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import classes from "./Auth.module.css";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { authActions } from "../store/AuthSlice";
 
 function LoginPage() {
   const emailInputRef = useRef();
   const passInputRef = useRef();
   const [showPassword, setShowPassword] = useState(false);
   const history = useHistory()
+  const dispatch = useDispatch()
 
   const showPassHandler = () => {
     setShowPassword(!showPassword);
@@ -45,7 +48,9 @@ function LoginPage() {
         throw new Error(errorData.error.message);
       }
       const data = await response.json();
+      dispatch(authActions.login({token: data.idToken, email: data.email}))
       data && alert("Login Successfull !!");
+      data && history.replace('/inbox');
       console.log(data, "in login");
     } catch (error) {
       alert(error);
@@ -56,7 +61,7 @@ function LoginPage() {
       <h1>Login</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="mb-3">
-          <Form.Label style={{ color: "white" }}>Email</Form.Label>
+          <Form.Label className={classes.label} >Email</Form.Label>
           <Form.Control
             type="email"
             placeholder="Email"
@@ -65,7 +70,7 @@ function LoginPage() {
           />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label style={{ color: "white" }}>Password</Form.Label>
+          <Form.Label className={classes.label}>Password</Form.Label>
           <div className="input-group">
             <Form.Control
               type={showPassword ? "text" : "password"}
@@ -82,7 +87,7 @@ function LoginPage() {
           Log in
         </Button>
         <Nav>
-          <NavLink to="signup" style={{ color: "white", paddingTop: "1rem" }}>
+          <NavLink to="signup" className={classes.navlink}>
             Have an Account?
           </NavLink>
         </Nav>

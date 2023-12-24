@@ -1,0 +1,21 @@
+.box {
+    background-color: aqua;
+    margin-top: 100px;
+}
+
+.navlink {
+    text-decoration: none;
+    color: inherit;
+    font-size:large;
+}
+
+.activeLink {
+    background-color: red;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.userName {
+    color: white;
+    margin-left: 50px;
+}

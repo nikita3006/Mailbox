@@ -63,18 +63,18 @@ function SignupPage() {
         <h1>Sign Up</h1>
         <Form onSubmit={submitHandler}>
             <Form.Group className='mb-3'>
-                <Form.Label>Email</Form.Label>
+                <Form.Label className={classes.label}>Email</Form.Label>
                 <Form.Control type='email' placeholder='Email' ref={emailInputRef} required autoComplete='new-email' />
             </Form.Group>
             <Form.Group className='mb-3'>
-                <Form.Label>Password</Form.Label>
+                <Form.Label className={classes.label}>Password</Form.Label>
                 <div className='input-group'>
                     <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' required ref={passInputRef} autoComplete='new-pass'/>
                     <Button className='input-group-append' onClick={showPassHandler}>{showPass ? <BsEyeSlash/> : <BsEye/>}</Button>
                 </div>
             </Form.Group>
             <Form.Group className='mb-3'>
-                <Form.Label>Confirm Password</Form.Label>
+                <Form.Label className={classes.label}>Confirm Password</Form.Label>
                 <div className='input-group'>
                     <Form.Control type={showConfPass ? 'text' : 'password'} placeholder='Confirm Password' required ref={confPassInputRef} autoComplete='new-confpass'/>
                     <Button className='input-group-append' onClick={showConfPassHandler}>{showConfPass ? <BsEyeSlash/> : <BsEye/>}</Button>
@@ -82,7 +82,7 @@ function SignupPage() {
             </Form.Group>
             <Button type='submit' variant='success pl-2'>Create Account</Button>
             <Nav>
-                <NavLink to="login" style={{color: 'white', paddingTop: '1rem'}}>
+                <NavLink to="login" className={classes.navlink}>
                     Have an Account?
                 </NavLink>
             </Nav>
