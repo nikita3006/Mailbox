@@ -14,21 +14,21 @@ function ComposeMail() {
 
   const userEmail = useSelector((state) => state.auth.userEmail);
   const userName = userEmail && userEmail.split("@")[0];
-  
-  
-  
+
+
+
   const [editorHtml, setEditorHtml] = useState("");
-  
+
   const toEmailRef = useRef();
   const subjectRef = useRef();
   
   const onEditorChange = (html) => {
     console.log(html,'inonchange');
     setEditorHtml(html);
-    
+
   };
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const SubmitHandler = async (event) => {
     try {
       event.preventDefault();
@@ -37,19 +37,15 @@ function ComposeMail() {
       const receiverName = receiverEmail.split("@")[0];
       const subject = subjectRef.current.value;
       const editorHtmlwithoutTags = editorHtml.replace(/<[^>]*>/g, "");
-
       const dateObj = new Date();
       const year = dateObj.getFullYear();
       const month = dateObj.getMonth()+1;
       const day = dateObj.getDate();
       const hours = dateObj.getHours();
       const minutes = dateObj.getMinutes();
-
       const date = {day,month,year};
       const time = {hours, minutes};
-
       
-
       const sentMessage = {
         date : date,
         time: time,
@@ -59,7 +55,7 @@ function ComposeMail() {
         content: editorHtmlwithoutTags,
       };
       // console.log(sentMessage,'in compose mail')
-  
+
       // Sending data to the outbox
       const data = await sendRequest({
         endPoint : `${userName}/sentbox`,
@@ -69,12 +65,12 @@ function ComposeMail() {
      
         toEmailRef.current.value = "";
         subjectRef.current.value = "";
-    
+
       const sentData = { id : data.name, ...sentMessage};
       data && alert("Mail sent succesfully");
       dispatch(mailActions.addSentboxMail(sentData));
       setEditorHtml("");
-  
+
       // Sending data to the inbox of the user
       const receiverMessage = {
         date : date,
@@ -92,7 +88,7 @@ function ComposeMail() {
         body : receiverMessage,
       });
       setIsLoading(false);
-   
+
       // const  receiveData = {...receiverData, id: receiverData.name};
       // dispatch(mailActions.addInboxMail((receiveData)));
     } catch (error) {
@@ -100,7 +96,6 @@ function ComposeMail() {
     }
   };
   
-
   return (
     <Form onSubmit={SubmitHandler}>
       <Card
@@ -123,8 +118,12 @@ function ComposeMail() {
         </FloatingLabel>
         <Card.Body>
           <strong>Compose email</strong>
-          <ReactQuill value={editorHtml} onChange={onEditorChange} theme="snow" placeholder="Enter Your Email" style={{height:'80px'}}/>
-
+          <ReactQuill 
+          value={editorHtml} 
+          onChange={onEditorChange} 
+          theme="snow" 
+          placeholder="Enter Your Email" 
+          style={{height:'80px'}}/>
         </Card.Body>
         <Button type="submit" style={{marginTop: '40px'}}>
           {isLoading ?   
@@ -146,5 +145,4 @@ function ComposeMail() {
     </Form>
   );
 }
-
 export default ComposeMail;

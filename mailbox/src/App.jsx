@@ -58,7 +58,7 @@ function App() {
       clearInterval(intervalId);
     };
 
-  },[isLoggedIn, fetchData, userName])
+  },[isLoggedIn, fetchData, userName]);
 
   return (
     <div className={classes.box}>
