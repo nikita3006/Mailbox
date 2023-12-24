@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
 import classes from "./Inbox.module.css";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button ,Container} from "react-bootstrap";
 
 function SentBox() {
 
@@ -46,30 +46,37 @@ function SentBox() {
     <div className={classes.inbox}>
     <h3 className={classes.inboxHeading}> SentBox</h3>
     {mails.map((mail) => (
-      <Row key={mail.id} className={ classes.openedMail }>
-        <Col className="col-11">
-          <NavLink className={classes.navlink} to={`/sentbox/${mail.id}`}>
-            <Row>
-              <Col className="col-1"></Col>
-              <Col className="fw-bold col-2">{mail.to}</Col>
-              <Col className="col-9">
-                <div className={classes.content}>
-                  <strong>{mail.subject} - </strong> {mail.content}
-                </div>
-              </Col>
-            </Row>
-          </NavLink>
-        </Col>
-        <Col className="col-1">
-          <Button
-            onClick={deleteMail.bind(null, mail)}
-            style={{ padding: "0px 5px" }}
-            variant="danger"
-          >
-            Delete
-          </Button>
-        </Col>
-      </Row>
+      <Container key={mail.id} fluid>
+          <Row className={ classes.openedMail }>
+            <Col className="col-11">
+              <NavLink className={classes.navlink} to={`/sentbox/${mail.id}`}>
+                <Row>
+                  <Col className="fw-bold col-2">{mail.to}</Col>
+                  <Col className="col-8">
+                    <div className={classes.content}>
+                      <strong>{mail.subject} - </strong> {mail.content}
+                    </div>
+                  </Col>
+                  <Col className="col-2">
+                    <strong>
+                      {mail.time.hours}:{mail.time.minutes} {" "}
+                      {mail.date.day}-{mail.date.month}-{mail.date.year} 
+                    </strong>
+                  </Col>
+                </Row>
+              </NavLink>
+            </Col>
+            <Col className="col-1">
+              <Button
+                onClick={deleteMail.bind(null, mail)}
+                style={{ padding: "0px 5px" }}
+                variant="danger"
+              >
+                Delete
+              </Button>
+            </Col>
+          </Row>
+        </Container>
     ))}
     <NavLink className={classes.navlink} to="/compose-mail">
       <Button className={classes.composeBtn} variant="success">

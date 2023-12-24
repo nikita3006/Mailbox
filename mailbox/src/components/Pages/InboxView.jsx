@@ -1,41 +1,66 @@
 import React, { useEffect, useState } from 'react'
 import classes from './InboxView.module.css';
-import { useParams,NavLink} from 'react-router-dom/cjs/react-router-dom.min';
+import { useParams,NavLink, useHistory} from 'react-router-dom/cjs/react-router-dom.min';
 import { Button } from "react-bootstrap";
+import { useDispatch, useSelector } from 'react-redux';
+import { mailActions } from '../store/MailSlice';
 
 function InboxView() {
 
+    const history = useHistory();
+    const dispatch = useDispatch();
+
+    const firebaseUrl = "https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box";
+
     const userEmail = localStorage.getItem('email');
-    const userName = userEmail.split("@")[0]
+    const userName = userEmail && userEmail.split("@")[0]
     const {id} = useParams();
 
-    const [mail,setMail]= useState({});
 
+    const inboxMails = useSelector(state => state.mails.inboxMails);
+    const mail = inboxMails.find(i => i.id === id);
 
-    useEffect(()=>{
-        const getData = async ()=>{
-            const response = await fetch(`https://mailbox-25oct-default-rtdb.firebaseio.com/mail-box/${userName}/inbox/${id}.json`)
-            const data = await response.json();
-            setMail(data);
-        }
-        getData();
-    },[id,userName])
-    
-    console.log(mail,'in total');
-    const fromMail = `<${mail.fromMail}>`;
-    const backSymbol = "<-"
+    const fromMail = mail && `<${mail.fromMail}>`;
+	  const backSymbol = "<-";
+
+    const deleteMail = ()=>{
+      history.replace('/inbox');
+      dispatch(mailActions.removeInboxMail(mail));
+      fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
+        method: "DELETE",
+
+      })
+    }
 
 
   return (
-    <div className={classes.box}>
-			<NavLink to="/inbox" className={classes.navlink}>
-				<Button style={{marginBottom:"20px", padding:"5px"}}> {backSymbol} Go Back</Button>
-			</NavLink>
-			<h4>Subject: {mail.subject}</h4>
-			<span style={{fontSize:"20px", fontWeight:"bold"}}>From: {mail.from}</span>{" "}
-			<span style={{fontSize:"16px"}}>{fromMail}</span>	
-			<p style={{marginTop:"20px"}}>{mail.content}</p>
-	</div>
+    <>
+			{mail && 
+				<div className={classes.box}>
+					<NavLink to="/inbox" className={classes.navlink}>
+						<Button style={{marginBottom:"20px", padding:"5px"}}> {backSymbol}Go Back</Button>
+					</NavLink>
+					<h4>Subject: {mail.subject}</h4>
+					<span style={{fontSize:"20px", fontWeight:"bold"}}>From: {mail.from}</span>{" "}
+					<span style={{fontSize:"16px"}}>{fromMail}</span>	
+					<h6 style={{marginTop: "10px"}}>
+						Time: {mail.time.hours}:{mail.time.minutes} {" "}
+						{mail.date.day}-{mail.date.month}-{mail.date.year} 
+					</h6>
+					<p style={{marginTop:"20px"}}>{mail.content}</p>
+
+					{/* <NavLink to="/inbox" className={classes.navlink}> */}
+						<Button 
+							variant="danger" 
+							onClick={deleteMail}
+							style={{marginBottom:"20px", padding:"5px"}}
+						> 
+							Delete
+						</Button>
+					{/* </NavLink> */}
+				</div>
+			}
+		</>
   )
 }
 

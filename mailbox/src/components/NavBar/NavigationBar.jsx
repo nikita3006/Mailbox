@@ -44,7 +44,7 @@ function NavigationBar() {
     )}
     {userEmail && (
       <div className={classes.navbar}>
-        <h4 style={{marginBottom:"30px"}} >User: {userName}</h4>
+        <h4 style={{marginBottom:"30px"}} >User:{userName}</h4>
         <NavLink
           to="/compose-mail"
           activeClassName={classes.activeLink}

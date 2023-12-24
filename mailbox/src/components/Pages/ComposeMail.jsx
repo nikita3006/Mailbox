@@ -3,6 +3,7 @@ import { Button, Card, Form, FloatingLabel, FormControl } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux";
 import "react-quill/dist/quill.snow.css"; // Import React Quill styles
 import ReactQuill from "react-quill"; // Import React Quill
+import { mailActions } from "../store/MailSlice";
 
 function ComposeMail() {
   const dispatch = useDispatch();
@@ -61,12 +62,15 @@ function ComposeMail() {
   
         toEmailRef.current.value = "";
         subjectRef.current.value = "";
-      const sentData = await sentResponse.json();
-      console.log(sentData,'sentData')
+      const data = await sentResponse.json();
+      const sentData = { id : data.name, ...sentMessage};
+      dispatch(mailActions.addSentboxMail(sentData));
       setEditorHtml("");
   
       // Sending data to the inbox of the user
       const receiverMessage = {
+        date : date,
+        time: time,
         from: userName,
         fromMail: userEmail,
         subject: subject,
@@ -80,7 +84,9 @@ function ComposeMail() {
       });
   
       const receiverData = await receiverResponse.json();
-      receiverData && alert("Mail sent succesfully")
+      receiverData && alert("Mail sent succesfully");
+      const  receiveData = {...receiverData, id: receiverData.name};
+      dispatch(mailActions.addInboxMail((receiveData)));
     } catch (error) {
       console.error(error);
     }
