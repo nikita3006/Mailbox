@@ -46,7 +46,6 @@ function LoginPage() {
       }
       const data = await response.json();
       data && alert("Login Successfull !!");
-      data && history.replace('/dummy')
       console.log(data, "in login");
     } catch (error) {
       alert(error);
