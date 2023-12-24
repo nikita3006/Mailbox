@@ -3,11 +3,13 @@ import { Button, Form, Nav } from 'react-bootstrap'
 import {NavLink} from "react-router-dom";
 import classes from './Auth.module.css';
 import { BsEye, BsEyeSlash } from "react-icons/bs";
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function SignupPage() {
     const emailInputRef = useRef()
     const passInputRef  = useRef()
     const confPassInputRef = useRef();
+    const history = useHistory()
     
     const [showPass,setShowPassword]= useState(false);
     const [showConfPass, setShowConfPass]= useState(false);
@@ -50,6 +52,7 @@ function SignupPage() {
             }
             const data = await response.json();
             data && alert("Account Created");
+            data && history('/login');
             console.log(data,'in signup')
         } catch (error) {
             alert(error);

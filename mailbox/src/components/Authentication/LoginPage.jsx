@@ -3,11 +3,13 @@ import { Button, Form, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import classes from "./Auth.module.css";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 function LoginPage() {
   const emailInputRef = useRef();
   const passInputRef = useRef();
   const [showPassword, setShowPassword] = useState(false);
+  const history = useHistory()
 
   const showPassHandler = () => {
     setShowPassword(!showPassword);
@@ -44,6 +46,7 @@ function LoginPage() {
       }
       const data = await response.json();
       data && alert("Login Successfull !!");
+      data && history.replace('/dummy')
       console.log(data, "in login");
     } catch (error) {
       alert(error);
