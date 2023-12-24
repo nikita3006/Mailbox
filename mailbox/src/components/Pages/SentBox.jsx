@@ -25,6 +25,12 @@ function SentBox() {
       setMails(loadedMails);
     }
     getDetails();
+    const intervalId = setInterval(getDetails, 2000);
+
+    // Cleanup the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
   },[userName])
 
   const deleteMail = async(mail)=>{
