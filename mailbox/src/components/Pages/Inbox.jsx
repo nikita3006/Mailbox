@@ -47,6 +47,16 @@ function Inbox() {
 
   }
 
+  const deleteMail =async (mail)=>{
+    const updatedMails = mail.filter((i)=> i.id !== mail.id);
+    setMails(updatedMails);
+
+    const response = await fetch(`${firebaseUrl}/${userName}/inbox/${mail.id}.json`,{
+      method: "DELETE",
+    })
+
+  }
+
 
   return (
     <div className={classes.inbox}>
@@ -54,21 +64,32 @@ function Inbox() {
         Inbox({countUnReadMails  ? `${countUnReadMails}-unread mails` : 'No UnRead Mails' })
       </h3>
       {mails.map((mail) => (
-        <NavLink className={classes.navlink} key={mail.id} to={`/inbox/${mail.id}`}>
-            <Row 
-              onClick={openMail.bind(null,mail)}
-              key={mail.id}
-              className={ mail.isRead ? classes.openMail : classes.notOpenedMail }
+        <Row key={mail.id} className={
+          mail.isRead ? classes.openedMail : classes.notOpenedMail
+        }>
+          <Col className="col-11">
+            <NavLink className={classes.navlink} to={`/inbox/${mail.id}`}>
+              <Row onClick={openMail.bind(null, mail)}>
+                <Col className="col-1"></Col>
+                <Col className="fw-bold col-2">{mail.from}</Col>
+                <Col className="col-9">
+                  <div className={classes.content}>
+                    <strong>{mail.subject} - </strong> {mail.content}
+                  </div>
+                </Col>
+              </Row>
+            </NavLink>
+          </Col>
+          <Col className="col-1">
+            <Button
+              onClick={deleteMail.bind(null, mail)}
+              style={{ padding: "0px 5px" }}
+              variant="danger"
             >
-              <Col className="col-3"></Col>
-              <Col className="fw-bold col-2">{mail.from}</Col>
-              <Col className="col-7">
-                <div className={classes.content} >
-                  <strong>{mail.subject} - </strong> {mail.content}
-                </div>
-              </Col>
-            </Row>
-        </NavLink>
+              Delete
+            </Button>
+          </Col>
+        </Row>
       ))}
       <NavLink className={classes.navlink} to="compose-mail">
           <Button className={classes.composeBtn} variant="success" >
