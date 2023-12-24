@@ -30,7 +30,7 @@ function ComposeMail() {
       const editorHtmlwithoutTags = editorHtml.replace(/<[^>]*>/g, "");
 
       const sentMessage = {
-        toEmail : receiverEmail,
+        toMail : receiverEmail,
         to: receiverName,
         subject: subjectRef.current.value,
         content: editorHtmlwithoutTags,

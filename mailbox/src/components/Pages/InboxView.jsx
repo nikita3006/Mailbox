@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import classes from './TotalMail.module.css';
+import classes from './InboxView.module.css';
 import { useParams,NavLink} from 'react-router-dom/cjs/react-router-dom.min';
 import { Button } from "react-bootstrap";
 
-function TotalMail() {
+function InboxView() {
 
     const userEmail = localStorage.getItem('email');
     const userName = userEmail.split("@")[0]
@@ -39,4 +39,4 @@ function TotalMail() {
   )
 }
 
-export default TotalMail
+export default InboxView
