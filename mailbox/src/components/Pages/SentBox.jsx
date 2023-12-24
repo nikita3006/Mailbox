@@ -51,7 +51,7 @@ function SentBox() {
           <NavLink className={classes.navlink} to={`/sentbox/${mail.id}`}>
             <Row>
               <Col className="col-1"></Col>
-              <Col className="fw-bold col-2">{mail.from}</Col>
+              <Col className="fw-bold col-2">{mail.to}</Col>
               <Col className="col-9">
                 <div className={classes.content}>
                   <strong>{mail.subject} - </strong> {mail.content}
